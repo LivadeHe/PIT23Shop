@@ -1,0 +1,591 @@
+openapi: 3.0.0
+info:
+  title: Lebensmittel-Shop API
+  version: 1.0.0
+paths:
+  /user:
+    post:
+      tags:
+        - user
+      summary: Konto erstellen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        '200':
+          description: Erfolgreich registriert
+        '400':
+          description: Ungültige Anforderung       
+  /user/login:
+    post:
+      tags:
+        - user
+      summary: Einloggen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        '200':
+          description: Erfolgreich eingeloggt
+        '401':
+          description: Ungültige Anmeldeinformationen
+  /user/resetPassword:
+    put:
+      tags:
+        - user
+      summary: Passwort zurücksetzen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        '200':
+          description: Passwort erfolgreich zurückgesetzt
+        '400':
+          description: Ungültige Anforderung
+  /user/{username}:
+    get:
+      tags:
+        - user
+      summary: User nach Namen suchen
+      description: ''
+      operationId: getUserByName
+      parameters:
+        - name: username
+          in: path
+          description: Name suchen
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User erfolgreich gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Ungültiger Username
+        '404':
+          description: User nicht gefunden
+    put:
+      tags:
+        - user
+      summary: User updaten
+      description: ''
+      operationId: updateUser
+      parameters:
+        - name: username
+          in: path
+          description: name that need to be deleted
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        default:
+          description: Erfolreiches Update
+    delete:
+      tags:
+        - user
+      summary: User löschen
+      description: ''
+      operationId: deleteUser
+      parameters:
+        - name: username
+          in: path
+          description: ''
+          required: true
+          schema:
+            type: string
+      responses:
+        '400':
+          description: Ungültiger Username
+        '404':
+          description: User nicht gefunden
+  /cart/{product_id}:
+    post:
+      tags: 
+        - cart
+      summary: Artikel zum Einkaufswagen hinzufügen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Cart"
+      responses:
+        '200':
+          description: Artikel erfolgreich zum Einkaufswagen hinzugefügt
+        '400':
+          description: Ungültige Anforderung
+    delete:
+      tags:
+        - cart 
+      summary: Artikel aus dem Einkaufswagen entfernen
+      parameters:
+        - name: product_id
+          schema: 
+            $ref: '#/components/schemas/Cart'
+        
+      responses:   
+        '200':
+          description: Artikel erfolgreich aus dem Einkaufswagen entfernt
+        '400':
+          description: Ungültige Anforderung     
+  /order:
+    post:
+      tags:
+        - order
+      summary: Order erstellen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Order"
+      responses:
+        '200':
+          description: Order erfolgreich erstellt
+        '400':
+          description: Ungültige Anforderung       
+        '401':
+          description: Nicht authentifiziert
+        '403':
+          description: Nicht autorisiert
+  /order/checkout:
+    post:
+      tags:
+        - order
+      summary: Einkauf abschließen
+      responses:
+        '200':
+          description: Einkauf erfolgreich abgeschlossen
+        '401':
+          description: Nicht authentifiziert
+        '403':
+          description: Nicht autorisiert
+  /order/{order_id}:
+    get:
+      tags:
+        - order
+      summary: Einkauf finden
+      description: Einkauf finden
+      operationId: getOrderById
+      parameters:
+        - name: orderId
+          in: path
+          description: ''
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Ungültige ID
+        '404':
+          description: Order nicht gefunden
+    delete:
+      tags:
+        - order
+      summary: Order löschen
+      description: Order löschen
+      operationId: deleteOrder
+      parameters:
+        - name: orderId
+          in: path
+          description: ''
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '400':
+          description: Ungültige ID
+        '404':
+          description: Order nicht gefunden
+  /product:
+    post:
+      tags:
+        - product
+      summary: Neues Produkt hinzufügen
+      description: Neues Produkt hinzufügen
+      operationId: addProduct
+      requestBody:
+        description: Neues Produkt hinzufügen
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Product'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Product'
+        required: true
+      responses:
+        '200':
+          description: Erfolgreich hinzufügt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'        
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '405':
+          description: Ungültiger Input
+    get:
+      tags:
+        - product
+      summary: Alle Produkte finden
+      description: 'Gibt ein Array mit allen Produkten aus'
+      operationId: findAllProducts
+      responses:
+        '200':
+          description: Erfolgreich gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Product'
+    
+  /product/{product_id}:
+    put:
+      tags:
+        - product
+      summary: Produkt updaten
+      description: Produkt updaten
+      operationId: updateProduct
+      requestBody:
+        description: Produkt updaten
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Product'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Product'
+        required: true
+      responses:
+        '200':
+          description: Update erfolgreich
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'        
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Ungültige ID
+        '404':
+          description: Produkt nicht gefunden
+        '405':
+          description: Validation exception
+       
+    delete:
+      tags:
+        - product
+      summary: Produkt löschen
+      description: ''
+      operationId: deleteProduct
+      parameters:
+        - name: product_id
+          in: path
+          description: Product id to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '400':
+          description: Ungültige ID
+    get:
+      tags:
+        - product
+      summary: Produkt finden
+      description: ''
+      operationId: findProduct
+      responses:
+        '200':
+          description: Erfolgreich gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Ungültige ID
+        '404':
+          description: Produkt nicht gefunden
+  /address:
+    post:
+      tags:
+        - address
+      summary: Neue Adresse hinzufügen
+      description: Neue Adresse hinzufügen
+      operationId: addAdress
+      requestBody:
+        description: Neue Adresse hinzufügen
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Address'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Address'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Address'
+        required: true
+      responses:
+        '200':
+          description: Erfolgreich hinzufügt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Address'      
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Address'
+        '405':
+          description: Ungültiger Input
+    get:
+      tags:
+        - address
+      summary: Alle Addressen finden
+      description: 'Gibt ein Array mit allen Adressen aus'
+      operationId: findAllAddresses
+      responses:
+        '200':
+          description: Erfolgreich gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Address'       
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Address'
+  /address/{address_id}:
+    put:
+      tags:
+        - address
+      summary: Adresse updaten
+      description: Adresse updaten
+      operationId: updateAddress
+      requestBody:
+        description: Adresse updaten
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Address'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Address'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Address'
+        required: true
+      responses:
+        '200':
+          description: Update erfolgreich
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Address'        
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Address'
+        '400':
+          description: Ungültige ID
+        '404':
+          description: Addresse nicht gefunden
+        '405':
+          description: Validation exception
+       
+    delete:
+      tags:
+        - address
+      summary: Adresse löschen
+      description: ''
+      operationId: deleteAddress
+      parameters:
+        - name: product_id
+          in: path
+          description: Adress id to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '400':
+          description: Ungültige ID
+    get:
+      tags:
+        - address
+      summary: Adresse finden
+      description: ''
+      operationId: findAdress
+      responses:
+        '200':
+          description: Erfolgreich gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Address'        
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Address'
+        '400':
+          description: Ungültige ID
+        '404':
+          description: Adresse nicht gefunden
+
+  
+components:
+  schemas:
+    Order:
+      type: object
+      properties:
+        order_id:
+          type: integer
+        cart:
+          type: array
+          xml:
+            name: addresses
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/Cart'
+        shipDate:
+          type: string
+          format: date-time
+        user:
+          type: array
+          xml:
+            name: users
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/User'
+        status:
+          type: string
+          description: Order Status
+          example: approved
+          enum:
+            - placed
+            - approved
+            - delivered
+        complete:
+          type: boolean
+      xml:
+        name: order
+    Cart:
+      type: object
+      properties:
+        cart_id:
+          type: integer
+        product_id:
+          type: string
+        quantity:
+          type: integer
+        total:
+          type: integer
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 100000
+        email:
+          type: string
+        password:
+          type: string  
+        username:
+          type: string
+          example: fehguy
+        address:
+          type: array
+          xml:
+            name: addresses
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/Address'
+      xml:
+        name: User
+    Address:
+      type: object
+      properties:
+        address_id:
+          type: integer
+        street:
+          type: string
+          example: 437 Lytton
+        city:
+          type: string
+          example: Palo Alto
+        state:
+          type: string
+          example: CA
+        zip:
+          type: string
+          example: '94301'
+      xml:
+        name: address
+    Product:
+      type: object
+      properties:
+        product_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number   
+        weight:
+          type: integer 
+        quantity:
+          type: integer
+        image:
+          type: string
